@@ -259,7 +259,8 @@ def classifier_accuracy(scores: t.Tensor, true_classes: t.Tensor) -> t.Tensor:
     assert true_classes.max() < scores.shape[1]
     
     classifications = t.argmax(scores, dim=-1)
-    print
+    num_correct = (classifications == true_classes).sum()
+    return num_correct / true_classes.shape[0]
 
 
 scores = t.tensor([[0.75, 0.5, 0.25], [0.1, 0.5, 0.4], [0.1, 0.7, 0.2]])
