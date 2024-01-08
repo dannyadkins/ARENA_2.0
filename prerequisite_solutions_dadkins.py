@@ -86,8 +86,11 @@ def temperatures_differences(temps: t.Tensor) -> t.Tensor:
     temps: as above
     """
     assert len(temps) % 7 == 0
-    pass
-
+    avgs = temperatures_average(temps) # [w1_avg w2_avg w3_avg]
+    # temps is [d1 d2 d3 d4 d5 d6 d7 ...]
+    # we can bucket temps into each week [num_weeks, 7], and then subtract the tensors straight up 
+    avgs = repeat(avgs, 'i -> (i 7)')
+    return temps - avgs
 
 expected = t.tensor(
     [
@@ -115,7 +118,7 @@ expected = t.tensor(
     ]
 )
 actual = temperatures_differences(temps)
-assert_all_close(actual, expected)
+assert_all_close(actual, expected, name="temperatures_differences")
 
 
 def temperatures_normalized(temps: t.Tensor) -> t.Tensor:
