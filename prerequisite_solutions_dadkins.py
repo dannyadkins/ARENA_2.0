@@ -15,11 +15,11 @@ def assert_all_equal(actual: t.Tensor, expected: t.Tensor, name: str = '') -> No
         raise e
 
 
-def assert_all_close(actual: t.Tensor, expected: t.Tensor, rtol=1e-05, atol=0.0001) -> None:
+def assert_all_close(actual: t.Tensor, expected: t.Tensor, rtol=1e-05, atol=0.0001, name='') -> None:
     try:
         assert actual.shape == expected.shape, f"Shape mismatch, got: {actual.shape}"
         assert t.allclose(actual, expected, rtol=rtol, atol=atol)
-        print("Passed!")
+        print("Passed! " + name)
     except AssertionError as e:
         # print the tensors 
         print("Expected: ", expected)
@@ -57,8 +57,8 @@ def rearrange_3() -> t.Tensor:
 
     [[[1], [2], [3], [4], [5], [6]]]
     """
-    out = rearrange(t.arange(1, 7), "(i) -> 1 i 1", i=6)
-    return out
+    return rearrange(t.arange(1, 7), "(i) -> 1 i 1", i=6)
+
 
 
 assert_all_equal(rearrange_3(), t.tensor([[[1], [2], [3], [4], [5], [6]]]), name="rearrange_3")
@@ -73,12 +73,11 @@ def temperatures_average(temps: t.Tensor) -> t.Tensor:
     You can do this with a single call to reduce.
     """
     assert len(temps) % 7 == 0
-    pass
-
-
+    return reduce(temps, "(i j) -> i", 'mean', j=7)
+    
 temps = t.Tensor([71, 72, 70, 75, 71, 72, 70, 68, 65, 60, 68, 60, 55, 59, 75, 80, 85, 80, 78, 72, 83])
 expected = t.tensor([71.5714, 62.1429, 79.0])
-assert_all_close(temperatures_average(temps), expected)
+assert_all_close(temperatures_average(temps), expected, name="temperatures_average")
 
 
 def temperatures_differences(temps: t.Tensor) -> t.Tensor:
