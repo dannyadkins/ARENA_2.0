@@ -199,11 +199,12 @@ def identity_matrix(n: int) -> t.Tensor:
     Bonus: find a different way to do it.
     """
     assert n >= 0
-    pass
+    out = rearrange(t.arange(n), "i->i 1") == t.arange(n)
+    return out.float()
 
 
-assert_all_equal(identity_matrix(3), t.Tensor([[1, 0, 0], [0, 1, 0], [0, 0, 1]]))
-assert_all_equal(identity_matrix(0), t.zeros((0, 0)))
+assert_all_equal(identity_matrix(3), t.Tensor([[1, 0, 0], [0, 1, 0], [0, 0, 1]]), name="identity_matrix")
+assert_all_equal(identity_matrix(0), t.zeros((0, 0)), name="identity_matrix")
 
 
 def sample_distribution(probs: t.Tensor, n: int) -> t.Tensor:
