@@ -3,16 +3,29 @@ from einops import rearrange, repeat, reduce
 import torch as t
 
 
-def assert_all_equal(actual: t.Tensor, expected: t.Tensor) -> None:
-    assert actual.shape == expected.shape, f"Shape mismatch, got: {actual.shape}"
-    assert (actual == expected).all(), f"Value mismatch, got: {actual}"
-    print("Passed!")
+def assert_all_equal(actual: t.Tensor, expected: t.Tensor, name: str = '') -> None:
+    try: 
+        assert actual.shape == expected.shape, f"Shape mismatch, got: {actual.shape}"
+        assert (actual == expected).all(), f"Value mismatch, got: {actual}"
+        print("Passed! " + name)
+    except AssertionError as e:
+        # print the tensors 
+        print("Expected: ", expected)
+        print("Actual: ", actual)
+        raise e
 
 
 def assert_all_close(actual: t.Tensor, expected: t.Tensor, rtol=1e-05, atol=0.0001) -> None:
-    assert actual.shape == expected.shape, f"Shape mismatch, got: {actual.shape}"
-    assert t.allclose(actual, expected, rtol=rtol, atol=atol)
-    print("Passed!")
+    try:
+        assert actual.shape == expected.shape, f"Shape mismatch, got: {actual.shape}"
+        assert t.allclose(actual, expected, rtol=rtol, atol=atol)
+        print("Passed!")
+    except AssertionError as e:
+        # print the tensors 
+        print("Expected: ", expected)
+        print("Actual: ", actual)
+        raise e
+    
 
 
 def rearrange_1() -> t.Tensor:
@@ -25,7 +38,7 @@ def rearrange_1() -> t.Tensor:
     return rearrange(t.arange(3, 9), "(i j) -> i j", i=3)
 
 expected = t.tensor([[3, 4], [5, 6], [7, 8]])
-assert_all_equal(rearrange_1(), expected)
+assert_all_equal(rearrange_1(), expected, name="rearrange_1")
 
 
 def rearrange_2() -> t.Tensor:
@@ -37,17 +50,18 @@ def rearrange_2() -> t.Tensor:
     return rearrange(t.arange(1, 7), "(i j) -> i j", i=2, j=3)
 
 
-assert_all_equal(rearrange_2(), t.tensor([[1, 2, 3], [4, 5, 6]]))
+assert_all_equal(rearrange_2(), t.tensor([[1, 2, 3], [4, 5, 6]]), name="rearrange_2")
 
 def rearrange_3() -> t.Tensor:
     """Return the following tensor using only torch.arange and einops.rearrange:
 
     [[[1], [2], [3], [4], [5], [6]]]
     """
-    pass
+    out = rearrange(t.arange(1, 7), "(i) -> 1 i 1", i=6)
+    return out
 
 
-assert_all_equal(rearrange_3(), t.tensor([[[1], [2], [3], [4], [5], [6]]]))
+assert_all_equal(rearrange_3(), t.tensor([[[1], [2], [3], [4], [5], [6]]]), name="rearrange_3")
 
 
 def temperatures_average(temps: t.Tensor) -> t.Tensor:
