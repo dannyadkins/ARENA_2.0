@@ -302,19 +302,26 @@ def gather_2d(matrix: t.Tensor, indexes: t.Tensor) -> t.Tensor:
 
     See: https://pytorch.org/docs/stable/generated/torch.gather.html?highlight=gather#torch.gather
     """
-    "TODO: YOUR CODE HERE"
+    # need to make sure each argument in indexes is less than matrix.shape[1]
+    assert (indexes >= matrix.shape[1]).sum() == 0, "Invalid index for gather"
+    # all indexes should likewise be >=0 
+    assert (indexes < 0).sum() == 0, "Invalid index for gather"
     out = matrix.gather(1, indexes)
-    "TODO: YOUR CODE HERE"
+    # shapes should match
+    assert matrix.ndim == indexes.ndim
+
     return out
 
 
 matrix = t.arange(15).view(3, 5)
 indexes = t.tensor([[4], [3], [2]])
 expected = t.tensor([[4], [8], [12]])
-assert_all_equal(gather_2d(matrix, indexes), expected)
+assert_all_equal(gather_2d(matrix, indexes), expected, "gather_2d")
 indexes2 = t.tensor([[2, 4], [1, 3], [0, 2]])
 expected2 = t.tensor([[2, 4], [6, 8], [10, 12]])
-assert_all_equal(gather_2d(matrix, indexes), expected)
+assert_all_equal(gather_2d(matrix, indexes), expected, "gather_2d")
+# indexes_should_fail = t.tensor([[2, 20], [1, 3], [0, 2]])
+# gather_2d(matrix, indexes_should_fail)
 
 
 def total_price_gather(prices: t.Tensor, items: t.Tensor) -> float:
