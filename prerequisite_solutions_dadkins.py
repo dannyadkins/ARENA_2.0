@@ -238,14 +238,14 @@ def sample_distribution(probs: t.Tensor, n: int) -> t.Tensor:
     hits = draws > cumulative_probs
     # then we can find the index by adding up the number of hits!! 
     # print(hits.sum(dim=-1))
-    return hits 
+    return hits.sum(dim=-1)
 
 
 n = 10000000
 probs = t.tensor([0.05, 0.1, 0.1, 0.2, 0.15, 0.4])
 # Commented out because bincount breaking on cpu and bool 
-# freqs = t.bincount(sample_distribution(probs, n)) / n
-# assert_all_close(freqs, probs, rtol=0.001, atol=0.001, name="sample_distribution")
+freqs = t.bincount(sample_distribution(probs, n)) / n
+assert_all_close(freqs, probs, rtol=0.001, atol=0.001, name="sample_distribution")
 
 
 def classifier_accuracy(scores: t.Tensor, true_classes: t.Tensor) -> t.Tensor:
@@ -257,7 +257,9 @@ def classifier_accuracy(scores: t.Tensor, true_classes: t.Tensor) -> t.Tensor:
     Use torch.argmax.
     """
     assert true_classes.max() < scores.shape[1]
-    pass
+    
+    classifications = t.argmax(scores, dim=-1)
+    print
 
 
 scores = t.tensor([[0.75, 0.5, 0.25], [0.1, 0.5, 0.4], [0.1, 0.7, 0.2]])
