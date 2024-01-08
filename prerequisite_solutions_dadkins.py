@@ -267,6 +267,7 @@ scores = t.tensor([[0.75, 0.5, 0.25], [0.1, 0.5, 0.4], [0.1, 0.7, 0.2]])
 true_classes = t.tensor([0, 1, 0])
 expected = 2.0 / 3.0
 assert classifier_accuracy(scores, true_classes) == expected
+print("Passed! classifier_accuracy")
 
 
 def total_price_indexing(prices: t.Tensor, items: t.Tensor) -> float:
@@ -280,12 +281,13 @@ def total_price_indexing(prices: t.Tensor, items: t.Tensor) -> float:
     https://numpy.org/doc/stable/user/basics.indexing.html#integer-array-indexing
     """
     assert items.max() < prices.shape[0]
-    pass
+    return prices[items].sum(dim=-1)
 
 
 prices = t.tensor([0.5, 1, 1.5, 2, 2.5])
 items = t.tensor([0, 0, 1, 1, 4, 3, 2])
 assert total_price_indexing(prices, items) == 9.0
+print("Passed! total_price_indexing")
 
 
 def gather_2d(matrix: t.Tensor, indexes: t.Tensor) -> t.Tensor:
