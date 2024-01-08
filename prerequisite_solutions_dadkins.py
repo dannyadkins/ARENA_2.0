@@ -22,7 +22,7 @@ def rearrange_1() -> t.Tensor:
      [5, 6],
      [7, 8]]
     """
-    pass
+    return rearrange(t.arange(3, 9), "(i j) -> i j", i=3)
 
 expected = t.tensor([[3, 4], [5, 6], [7, 8]])
 assert_all_equal(rearrange_1(), expected)
