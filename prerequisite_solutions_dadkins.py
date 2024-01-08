@@ -34,11 +34,10 @@ def rearrange_2() -> t.Tensor:
     [[1, 2, 3],
      [4, 5, 6]]
     """
-    pass
+    return rearrange(t.arange(1, 7), "(i j) -> i j", i=2, j=3)
 
 
 assert_all_equal(rearrange_2(), t.tensor([[1, 2, 3], [4, 5, 6]]))
-
 
 def rearrange_3() -> t.Tensor:
     """Return the following tensor using only torch.arange and einops.rearrange:
