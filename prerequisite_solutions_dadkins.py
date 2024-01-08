@@ -128,8 +128,12 @@ def temperatures_normalized(temps: t.Tensor) -> t.Tensor:
 
     Pass torch.std to reduce.
     """
-    pass
+    # std dev is sqrt(sum_x((x_mean - x)**2) / n - 1)
 
+    diffs = temperatures_differences(temps)
+
+    stddev = repeat(reduce(diffs, '(i 7) -> i', t.std), 'i -> (i 7)')
+    return diffs/stddev 
 
 expected = t.tensor(
     [
@@ -157,7 +161,7 @@ expected = t.tensor(
     ]
 )
 actual = temperatures_normalized(temps)
-assert_all_close(actual, expected)
+assert_all_close(actual, expected, name='temperatures_normalized')
 
 
 def batched_dot_product_nd(a: t.Tensor, b: t.Tensor) -> t.Tensor:
