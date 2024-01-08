@@ -178,15 +178,16 @@ def batched_dot_product_nd(a: t.Tensor, b: t.Tensor) -> t.Tensor:
     Use torch.einsum. You can use the ellipsis "..." in the einsum formula to represent an arbitrary number of dimensions.
     """
     assert a.shape == b.shape
-    pass
+
+    return t.einsum('b...,b...->b', a, b)
 
 
 actual = batched_dot_product_nd(t.tensor([[1, 1, 0], [0, 0, 1]]), t.tensor([[1, 1, 0], [1, 1, 0]]))
 expected = t.tensor([2, 0])
-assert_all_equal(actual, expected)
+assert_all_equal(actual, expected, "batched_dot_product_nd")
 actual2 = batched_dot_product_nd(t.arange(12).reshape((3, 2, 2)), t.arange(12).reshape((3, 2, 2)))
 expected2 = t.tensor([14, 126, 366])
-assert_all_equal(actual2, expected2)
+assert_all_equal(actual2, expected2, "batched_dot_product_nd")
 
 
 def identity_matrix(n: int) -> t.Tensor:
