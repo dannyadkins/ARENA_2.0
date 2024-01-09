@@ -92,17 +92,26 @@ def intersect_ray_1d(ray: t.Tensor, segment: t.Tensor) -> bool:
 
     Return True if the ray intersects the segment.
     '''
-    print("Ray: ", ray)
-    print("Segment: ", segment)
     l1 = segment[0]
     l2 = segment[1]
 
     o = ray[0]
     d = ray[1]
 
-    
+    try: 
+        solution = t.linalg.solve(
+            #D, L1-L2, u
+            t.Tensor([[d[0], l1[0]-l2[0]],
+            [d[1], l1[1]-l2[1]]])
+            , 
+            t.Tensor([[l1[0] - o[0]],
+            [l1[1] - o[1]]])
+        )
+    except:
+          return False 
 
-    return True 
+    u, v = solution
+    return (u >= 0.0) and (v >= 0.0) and (v <= 1.0)
 
 tests.test_intersect_ray_1d(intersect_ray_1d)
 tests.test_intersect_ray_1d_special_case(intersect_ray_1d)
