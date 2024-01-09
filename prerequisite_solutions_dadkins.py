@@ -434,7 +434,12 @@ def batched_logsoftmax(matrix: t.Tensor) -> t.Tensor:
     Do this without using PyTorch's logsoftmax function.
     For each row, subtract the maximum first to avoid overflow if the row contains large values.
     """
-    pass
+    # log softmax = log(e^xi/sum_x(e^x))
+    # = log(e^xi) - log(sum_x(e^x)) (logsumexp)
+    # = xi - logsumexp(x)
+    # needed help on this one :/ 
+    a = matrix.max(dim=1, keepdim=True).values
+    return matrix - a - (matrix - a).exp().sum(dim=1, keepdim=True).log()
 
 
 matrix = t.arange(1, 6).view((1, 5)).float()
@@ -442,7 +447,7 @@ start = 1000
 matrix2 = t.arange(start + 1, start + 6).view((1, 5)).float()
 actual = batched_logsoftmax(matrix2)
 expected = t.tensor([[-4.4519, -3.4519, -2.4519, -1.4519, -0.4519]])
-assert_all_close(actual, expected)
+assert_all_close(actual, expected, name="batched_logsoftmax")
 
 
 def batched_cross_entropy_loss(logits: t.Tensor, true_labels: t.Tensor) -> t.Tensor:
@@ -456,14 +461,17 @@ def batched_cross_entropy_loss(logits: t.Tensor, true_labels: t.Tensor) -> t.Ten
     Hint: convert the logits to log-probabilities using your batched_logsoftmax from above.
     Then the loss for an example is just the negative of the log-probability that the model assigned to the true class. Use torch.gather to perform the indexing.
     """
-    pass
-
+    # loss = -1 * logprobs of true labels
+    logprobs = batched_logsoftmax(logits)
+    true_labels = rearrange(true_labels, "n -> n 1")
+    true_logprobs = logprobs.gather(1, true_labels)
+    return -1 * rearrange(true_logprobs, "n 1 -> n")
 
 logits = t.tensor([[float("-inf"), float("-inf"), 0], [1 / 3, 1 / 3, 1 / 3], [float("-inf"), 0, 0]])
 true_labels = t.tensor([2, 0, 0])
 expected = t.tensor([0.0, math.log(3), float("inf")])
 actual = batched_cross_entropy_loss(logits, true_labels)
-assert_all_close(actual, expected)
+assert_all_close(actual, expected, name="batched_cross_entropy_loss")
 
 
 def collect_rows(matrix: t.Tensor, row_indexes: t.Tensor) -> t.Tensor:
