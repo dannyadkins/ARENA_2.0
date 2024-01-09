@@ -50,6 +50,8 @@ def test_intersect_rays_1d_special_case(intersect_rays_1d):
     )
     actual = intersect_rays_1d(ray, segment)
     expected = solutions.intersect_rays_1d(ray, segment)
+    print("actual: ", actual)
+    print("expected: ", expected)
     t.testing.assert_close(actual, expected)
     print("All tests in `test_intersect_rays_1d_special_case` passed!")
 

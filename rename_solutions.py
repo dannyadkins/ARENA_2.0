@@ -3,9 +3,9 @@ import os
 def rename_files(root_folder):
     for root, dirs, files in os.walk(root_folder):
         for file in files:
-            if file == "solutions.py":
+            if file == "solutions_answer_key.py":
                 old_file_path = os.path.join(root, file)
-                new_file_path = os.path.join(root, "solutions_answer_key.py")
+                new_file_path = os.path.join(root, "solutions.py")
                 os.rename(old_file_path, new_file_path)
                 print(f"Renamed: {old_file_path} to {new_file_path}")
 
