@@ -401,21 +401,27 @@ def batched_softmax(matrix: t.Tensor) -> t.Tensor:
 
     Return: (batch, n). For each i, out[i] should sum to 1.
     """
-    pass
+
+    # softmax of each x is e^x, divided by the sum of e^x
+
+    exps = t.exp(matrix)
+    return exps/exps.sum(dim=-1, keepdim=True)
+    
+    
 
 
 matrix = t.arange(1, 6).view((1, 5)).float().log()
 expected = t.arange(1, 6).view((1, 5)) / 15.0
 actual = batched_softmax(matrix)
-assert_all_close(actual, expected)
+assert_all_close(actual, expected, name="batched_softmax")
 for i in [0.12, 3.4, -5, 6.7]:
-    assert_all_close(actual, batched_softmax(matrix + i))
+    assert_all_close(actual, batched_softmax(matrix + i),  name="batched_softmax")
 matrix2 = t.rand((10, 20))
 actual2 = batched_softmax(matrix2)
 assert actual2.min() >= 0.0
 assert actual2.max() <= 1.0
-assert_all_equal(actual2.argsort(), matrix2.argsort())
-assert_all_close(actual2.sum(dim=-1), t.ones(matrix2.shape[:-1]))
+assert_all_equal(actual2.argsort(), matrix2.argsort(), name="batched_softmax")
+assert_all_close(actual2.sum(dim=-1), t.ones(matrix2.shape[:-1]), name="batched_softmax")
 
 
 def batched_logsoftmax(matrix: t.Tensor) -> t.Tensor:
