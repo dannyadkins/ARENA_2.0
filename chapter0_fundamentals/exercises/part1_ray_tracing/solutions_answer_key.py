@@ -53,5 +53,56 @@ def make_rays_1d(num_pixels: int, y_limit: float) -> t.Tensor:
 
 rays1d = make_rays_1d(9, 10.0)
 
+# if MAIN:
+#     fig = render_lines_with_plotly(rays1d)
+
+# %%
+
 if MAIN:
-    fig = render_lines_with_plotly(rays1d)
+	fig = setup_widget_fig_ray()
+	display(fig)
+	
+	@interact
+	def response(seed=(0, 10, 1), v=(-2.0, 2.0, 0.01)):
+		t.manual_seed(seed)
+		L_1, L_2 = t.rand(2, 2)
+		P = lambda v: L_1 + v * (L_2 - L_1)
+		x, y = zip(P(-2), P(2))
+		with fig.batch_update(): 
+			fig.data[0].update({"x": x, "y": y}) 
+			fig.data[1].update({"x": [L_1[0], L_2[0]], "y": [L_1[1], L_2[1]]}) 
+			fig.data[2].update({"x": [P(v)[0]], "y": [P(v)[1]]})
+
+# %%
+
+segments = t.tensor([
+	[[1.0, -12.0, 0.0], [1, -6.0, 0.0]], 
+	[[0.5, 0.1, 0.0], [0.5, 1.15, 0.0]], 
+	[[2, 12.0, 0.0], [2, 21.0, 0.0]]
+])
+
+# %%
+
+def intersect_ray_1d(ray: t.Tensor, segment: t.Tensor) -> bool:
+    '''
+    ray: shape (n_points=2, n_dim=3)  # O, D points
+    segment: shape (n_points=2, n_dim=3)  # L_1, L_2 points
+
+    Using torch.lingalg.solve and torch.stack, implement the intersect_ray_1d function to solve the above matrix equation
+
+    Return True if the ray intersects the segment.
+    '''
+    print("Ray: ", ray)
+    print("Segment: ", segment)
+    l1 = segment[0]
+    l2 = segment[1]
+
+    o = ray[0]
+    d = ray[1]
+
+    
+
+    return True 
+
+tests.test_intersect_ray_1d(intersect_ray_1d)
+tests.test_intersect_ray_1d_special_case(intersect_ray_1d)
