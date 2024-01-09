@@ -119,8 +119,16 @@ tests.test_intersect_ray_1d_special_case(intersect_ray_1d)
 def intersect_rays_1d(rays: Float[Tensor, "nrays 2 3"], segments: Float[Tensor, "nsegments 2 3"]) -> Bool[Tensor, "nrays"]:
     '''
     For each ray, return True if it intersects any segment.
+
+    rays: [nrays, 2, 3]
+    segments: [nsegments, 2, 3]
+    
+    output: [nrays]
     '''
-    return False 
+
+    repeated_rays = einops.repeat(rays, 'nrays np nd -> nrays nsegments np nd', nsegments=segments.shape[0])
+    repeated_segments = einops.repeat(segments, 'nsegments np nd -> nrays nsegments np nd', nrays=rays.shape[0])
+    return 
 
 tests.test_intersect_rays_1d(intersect_rays_1d)
 tests.test_intersect_rays_1d_special_case(intersect_rays_1d)
