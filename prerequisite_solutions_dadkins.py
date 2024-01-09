@@ -483,14 +483,14 @@ def collect_rows(matrix: t.Tensor, row_indexes: t.Tensor) -> t.Tensor:
     Return: shape (k, n). out[i] is matrix[row_indexes[i]].
     """
     assert row_indexes.max() < matrix.shape[0]
-    pass
+    return matrix[row_indexes]
 
 
 matrix = t.arange(15).view((5, 3))
 row_indexes = t.tensor([0, 2, 1, 0])
 actual = collect_rows(matrix, row_indexes)
 expected = t.tensor([[0, 1, 2], [6, 7, 8], [3, 4, 5], [0, 1, 2]])
-assert_all_equal(actual, expected)
+assert_all_equal(actual, expected, name="collect_rows")
 
 
 def collect_columns(matrix: t.Tensor, column_indexes: t.Tensor) -> t.Tensor:
